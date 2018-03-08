@@ -80,7 +80,7 @@ namespace SidebarDiagnostics.Models
                 ObservableCollection<MetricRecord> _records = new ObservableCollection<MetricRecord>();
 
                 _data.Add(_metric, _records);
-                
+
                 _metric.PropertyChanged += Metric_PropertyChanged;
 
                 _plot.Series.Add(
@@ -186,9 +186,10 @@ namespace SidebarDiagnostics.Models
 
                 _mData.Add(new MetricRecord(_metric.nValue, _now));
             }
-            catch
+            catch (Exception exception)
             {
                 _metric.PropertyChanged -= Metric_PropertyChanged;
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(exception));
             }
         }
 

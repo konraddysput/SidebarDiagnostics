@@ -30,6 +30,7 @@ namespace SidebarDiagnostics.Models
 
         public void NotifyPropertyChanged(string propertyName)
         {
+            BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(propertyName));
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));

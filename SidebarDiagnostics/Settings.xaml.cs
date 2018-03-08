@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using SidebarDiagnostics.Models;
 using SidebarDiagnostics.Windows;
 using SidebarDiagnostics.Style;
+using Backtrace.Model;
 
 namespace SidebarDiagnostics
 {
@@ -44,7 +45,7 @@ namespace SidebarDiagnostics
                 await _sidebar.Reset(finalize);
             }));
         }
-        
+
         private void NumberBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if (new Regex("[^0-9.-]+").IsMatch(e.Text))
@@ -73,7 +74,7 @@ namespace SidebarDiagnostics
 
             ClickThroughCheckbox.IsChecked = false;
         }
-        
+
         private void BindButton_LostFocus(object sender, RoutedEventArgs e)
         {
             if (_hotkey != null)
@@ -293,7 +294,8 @@ namespace SidebarDiagnostics
         private async void SaveButton_Click(object sender, RoutedEventArgs e)
         {
             await Save(true);
-
+            BacktraceLogger.UpdateSettings();
+            BacktraceLogger.Log(new BacktraceReport("New client settings"));
             Close();
         }
 
@@ -339,5 +341,15 @@ namespace SidebarDiagnostics
         private Hotkey _hotkey { get; set; }
 
         private ToggleButton _keybinder { get; set; }
+
+        private void TabControl_SelectionChanged()
+        {
+
+        }
+
+        private void TabControl_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+
+        }
     }
 }

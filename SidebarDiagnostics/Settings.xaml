@@ -44,7 +44,7 @@
                 </Button.Style>
             </Button>
         </StackPanel>
-        <TabControl Style="{StaticResource SettingTab}">
+        <TabControl Style="{StaticResource SettingTab}" SelectionChanged="TabControl_SelectionChanged">
             <TabItem Header="{x:Static frame:Resources.SettingsGeneralTab}">
                 <Grid Style="{StaticResource SettingGrid}">
                     <Grid.ColumnDefinitions>
@@ -136,7 +136,7 @@
 
                     <Label Grid.Column="0" Grid.Row="7" Content="{x:Static frame:Resources.SettingsInitiallyHidden}" />
                     <CheckBox Grid.Column="1" Grid.Row="7" IsChecked="{Binding Path=InitiallyHidden, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static frame:Resources.SettingsInitiallyHiddenTooltip}" />
-                    
+
                     <Label Grid.Column="0" Grid.Row="8" Content="{x:Static frame:Resources.SettingsCollapseMenuBar}" />
                     <CheckBox Grid.Column="1" Grid.Row="8" IsChecked="{Binding Path=CollapseMenuBar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ToolTip="{x:Static frame:Resources.SettingsCollapseMenuBarTooltip}" />
                 </Grid>
@@ -290,7 +290,7 @@
                                                                 <Setter Property="VerticalAlignment" Value="Center" />
                                                                 <Setter Property="Margin" Value="0,5" />
                                                             </Style>
-                                                            
+
                                                             <Style TargetType="{x:Type StackPanel}">
                                                                 <Setter Property="Orientation" Value="Horizontal" />
                                                                 <Setter Property="Margin" Value="0,5" />
@@ -374,6 +374,38 @@
                     <ToggleButton Grid.Column="1" Grid.Row="7" Click="BindClose_Click" LostFocus="BindButton_LostFocus" Style="{StaticResource HotkeyToggle}" />
                     <TextBox Grid.Column="2" Grid.Row="7" Text="{Binding Path=CloseKey, Mode=OneWay, Converter={StaticResource HotkeyConverter}}" Style="{StaticResource HotkeyLabel}" />
                 </Grid>
+            </TabItem>
+
+            <TabItem Header="{x:Static frame:Resources.BacktraceSettings}">
+                <Grid Style="{StaticResource SettingGrid}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"></ColumnDefinition>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                        <RowDefinition Height="38px"></RowDefinition>
+                    </Grid.RowDefinitions>
+
+                    <Label Grid.Column="0" Grid.Row="0" Content="{x:Static frame:Resources.BacktraceHost}" Height="26" Margin="0,8,15,4" />
+                    <TextBox  Grid.Column="2" Grid.Row="0" Text="{Binding Path=BacktraceHost,  Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    
+                    <Label Grid.Column="0" Grid.Row="1" Content="{x:Static frame:Resources.BacktraceToken}" Height="26" Margin="0,8,15,4" />
+                    <TextBox  Grid.Column="2" Grid.Row="1" Text="{Binding Path=BacktraceToken, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    
+                    <Label Grid.Column="0" Grid.Row="2" Content="{x:Static frame:Resources.BacktraceDatabase}" Height="26" Margin="0,8,15,4" />
+                    <TextBox  Grid.Column="2" Grid.Row="2" Text="{Binding Path=BacktraceDatabasePath,  Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    
+                    <Label Grid.Column="0" Grid.Row="3" Content="{x:Static frame:Resources.BacktraceRateLimiting}" Height="26" Margin="0,8,15,4" />
+                    <TextBox  Grid.Column="2" Grid.Row="3" Text="{Binding Path=BacktraceClientSiteLimiting, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    
+                    </Grid>
             </TabItem>
         </TabControl>
     </DockPanel>

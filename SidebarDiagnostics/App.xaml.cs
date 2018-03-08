@@ -26,10 +26,10 @@ namespace SidebarDiagnostics
             base.OnStartup(e);
 
             // ERROR HANDLING
-            #if !DEBUG
+#if !DEBUG
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(AppDomain_Error);
-            #endif
-
+#endif
+            System.Threading.Thread.CurrentThread.Name = "SidebarDiagnosticMainThread";
             // LANGUAGE
             Culture.SetDefault();
             Culture.SetCurrent(true);
@@ -54,6 +54,9 @@ namespace SidebarDiagnostics
             TrayIcon.ToolTipText = string.Format("{0} v{1}", Framework.Resources.AppName, _vstring);
             TrayIcon.TrayContextMenuOpen += TrayIcon_TrayContextMenuOpen;
 
+            // SETUP LOGGER
+            BacktraceLogger logger = new BacktraceLogger(Framework.Settings.Instance);
+
             // START APP
             if (Framework.Settings.Instance.InitialSetup)
             {
@@ -61,6 +64,7 @@ namespace SidebarDiagnostics
             }
             else
             {
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport("Settings already exists"));
                 StartApp(false);
             }
         }
@@ -182,15 +186,17 @@ namespace SidebarDiagnostics
                     }
                 }
             }
-            catch (WebException)
+            catch (WebException webException)
             {
                 if (showInfo)
                 {
                     MessageBox.Show(Framework.Resources.UpdateErrorText, Framework.Resources.UpdateErrorTitle, MessageBoxButton.OK, MessageBoxImage.Error, MessageBoxResult.OK, MessageBoxOptions.DefaultDesktopOnly);
                 }
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(webException));
             }
             catch (Exception e)
             {
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(e));
                 Framework.Settings.Instance.AutoUpdate = false;
                 Framework.Settings.Instance.Save();
 

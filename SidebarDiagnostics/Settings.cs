@@ -56,6 +56,74 @@ namespace SidebarDiagnostics.Framework
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Backtrace API Host URI
+        /// </summary>
+        private string _backtraceHost { get; set; } = string.Empty;
+        [JsonProperty]
+        public string BacktraceHost
+        {
+            get
+            {
+                return _backtraceHost;
+            }
+            set
+            {
+                _backtraceHost = value;
+            }
+        }
+
+        /// <summary>
+        /// Backtrace API Token
+        /// </summary>
+        private string _backtraceToken { get; set; } = string.Empty;
+        [JsonProperty]
+        public string BacktraceToken
+        {
+            get
+            {
+                return _backtraceToken;
+            }
+            set
+            {
+                _backtraceToken = value;
+            }
+        }
+
+        /// <summary>
+        /// Path to backtrace temporary directory where minidump are stored
+        /// </summary>
+        private string _backtraceDatabasePath { get; set; } = string.Empty;
+        [JsonProperty]
+        public string BacktraceDatabasePath
+        {
+            get
+            {
+                return _backtraceDatabasePath;
+            }
+            set
+            {
+                _backtraceDatabasePath = value;
+            }
+        }
+
+        /// <summary>
+        /// Number of request send by Backtrace client to API
+        /// </summary>
+        private uint _backtraceClientSiteLimiting { get; set; } = 0;
+        [JsonProperty]
+        public uint BacktraceClientSiteLimiting
+        {
+            get
+            {
+                return _backtraceClientSiteLimiting;
+            }
+            set
+            {
+                _backtraceClientSiteLimiting = value;
+            }
+        }
+
         private string _changeLog { get; set; } = null;
 
         [JsonProperty]
@@ -142,7 +210,7 @@ namespace SidebarDiagnostics.Framework
         }
 
         private bool _useAppBar { get; set; } = true;
-        
+
         [JsonProperty]
         public bool UseAppBar
         {
@@ -357,7 +425,7 @@ namespace SidebarDiagnostics.Framework
             set
             {
                 _initiallyHidden = value;
-                
+
                 NotifyPropertyChanged("InitiallyHidden");
             }
         }
@@ -465,7 +533,7 @@ namespace SidebarDiagnostics.Framework
         }
 
         private string _fontColor { get; set; } = "#FFFFFF";
-        
+
         [JsonProperty]
         public string FontColor
         {

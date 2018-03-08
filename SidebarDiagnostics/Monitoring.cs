@@ -1198,11 +1198,12 @@ namespace SidebarDiagnostics.Monitoring
             {
                 _instances = new PerformanceCounterCategory(CATEGORYNAME).GetInstanceNames();
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException exception)
             {
                 _instances = new string[0];
 
                 App.ShowPerformanceCounterError();
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(exception));
             }
 
             Regex _regex = new Regex(@"^isatap.*$");
@@ -1301,8 +1302,9 @@ namespace SidebarDiagnostics.Monitoring
                     }
                 }
             }
-            catch (WebException)
+            catch (WebException webException)
             {
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(webException));
                 return "";
             }
         }

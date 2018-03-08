@@ -989,4 +989,24 @@
     <value>Mise à jour</value>
     <comment>Title of the update window</comment>
   </data>
+  <data name="BacktraceDatabase" xml:space="preserve">
+    <value>Database path</value>
+    <comment>Database directory where Backtrace Logger store library data</comment>
+  </data>
+  <data name="BacktraceHost" xml:space="preserve">
+    <value>Backtrace Host Uri</value>
+    <comment>Uri to Backtrace API</comment>
+  </data>
+  <data name="BacktraceRateLimiting" xml:space="preserve">
+    <value>Rate limiting</value>
+    <comment>Maximum number of reports per minute</comment>
+  </data>
+  <data name="BacktraceSettings" xml:space="preserve">
+    <value>Backtrace Settings</value>
+    <comment>Settings window tab</comment>
+  </data>
+  <data name="BacktraceToken" xml:space="preserve">
+    <value>Backtrace API Token</value>
+    <comment>Token to Backtrace API</comment>
+  </data>
 </root>

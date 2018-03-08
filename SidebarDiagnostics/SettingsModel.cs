@@ -14,6 +14,7 @@ namespace SidebarDiagnostics.Models
 {
     public class SettingsModel : INotifyPropertyChanged
     {
+        private bool _loggerChange = false;
         public SettingsModel(Sidebar sidebar)
         {
             DockEdgeItems = new DockItem[2]
@@ -55,6 +56,13 @@ namespace SidebarDiagnostics.Models
             AutoBGColor = Framework.Settings.Instance.AutoBGColor;
             BGColor = Framework.Settings.Instance.BGColor;
             BGOpacity = Framework.Settings.Instance.BGOpacity;
+
+            // Logger settings
+            BacktraceHost = Framework.Settings.Instance.BacktraceHost;
+            BacktraceToken = Framework.Settings.Instance.BacktraceToken;
+            BacktraceClientSiteLimiting = Framework.Settings.Instance.BacktraceClientSiteLimiting;
+            BacktraceDatabasePath = Framework.Settings.Instance.BacktraceDatabasePath;
+
 
             TextAlignItems = new TextAlignItem[2]
             {
@@ -123,6 +131,7 @@ namespace SidebarDiagnostics.Models
             }
 
             IsChanged = false;
+            _loggerChange = false;
         }
 
         public void Save()
@@ -130,6 +139,20 @@ namespace SidebarDiagnostics.Models
             if (!string.Equals(Culture, Framework.Settings.Instance.Culture, StringComparison.Ordinal))
             {
                 MessageBox.Show(Resources.LanguageChangedText, Resources.LanguageChangedTitle, MessageBoxButton.OK, MessageBoxImage.Information, MessageBoxResult.OK);
+            }
+
+
+            if (_loggerChange)
+            {
+                Dictionary<string, object> attributes = new Dictionary<string, object>()
+                {
+                    { "host", BacktraceHost },
+                    { "token", BacktraceToken },
+                    { "database", BacktraceDatabasePath },
+                    { "reportRate", BacktraceClientSiteLimiting },
+                };
+                BacktraceLogger.Log(new Backtrace.Model.BacktraceReport("new backtra", attributes));
+                _loggerChange = false;
             }
 
             Framework.Settings.Instance.DockEdge = DockEdge;
@@ -160,6 +183,10 @@ namespace SidebarDiagnostics.Models
             Framework.Settings.Instance.InitiallyHidden = InitiallyHidden;
             Framework.Settings.Instance.ShowClock = ShowClock;
             Framework.Settings.Instance.Clock24HR = Clock24HR;
+            Framework.Settings.Instance.BacktraceHost = BacktraceHost;
+            Framework.Settings.Instance.BacktraceToken = BacktraceToken;
+            Framework.Settings.Instance.BacktraceDatabasePath = BacktraceDatabasePath;
+            Framework.Settings.Instance.BacktraceClientSiteLimiting = BacktraceClientSiteLimiting;
 
             MonitorConfig[] _config = MonitorConfig.Select(c => c.Clone()).ToArray();
 
@@ -191,7 +218,7 @@ namespace SidebarDiagnostics.Models
             {
                 _hotkeys.Add(ToggleKey);
             }
-            
+
             if (ShowKey != null)
             {
                 _hotkeys.Add(ShowKey);
@@ -398,6 +425,94 @@ namespace SidebarDiagnostics.Models
             }
         }
 
+        /// <summary>
+        /// Backtrace API Host URI
+        /// </summary>
+        private string _backtraceHost { get; set; } = string.Empty;
+        public string BacktraceHost
+        {
+            get
+            {
+                return _backtraceHost;
+            }
+            set
+            {
+                _backtraceHost = value;
+                _loggerChange = true;
+                NotifyPropertyChanged("BacktraceHost");
+            }
+        }
+
+        /// <summary>
+        /// Backtrace API Token
+        /// </summary>
+        private string _backtraceToken { get; set; } = string.Empty;
+        public string BacktraceToken
+        {
+            get
+            {
+                return _backtraceToken;
+            }
+            set
+            {
+                try
+                {
+                    _backtraceToken = value;
+                }
+                catch(FormatException formatException)
+                {
+                    BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(formatException));
+                }
+                _loggerChange = true;
+                NotifyPropertyChanged("BacktraceToken");
+            }
+        }
+
+        /// <summary>
+        /// Path to backtrace temporary directory where minidump are stored
+        /// </summary>
+        private string _backtraceDatabasePath { get; set; } = string.Empty;
+        public string BacktraceDatabasePath
+        {
+            get
+            {
+                return _backtraceDatabasePath;
+            }
+            set
+            {
+                try
+                {
+                    BacktraceLogger.ValidateDatabase(value);
+                    _backtraceDatabasePath = value;
+                }
+                catch(Exception e)
+                {
+                    BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(e));
+                }
+                _loggerChange = true;
+                NotifyPropertyChanged("BacktraceDatabasePath");
+            }
+        }
+
+        /// <summary>
+        /// Number of request send by Backtrace client to API
+        /// </summary>
+        private uint _backtraceClientSiteLimiting { get; set; } = 0;
+        public uint BacktraceClientSiteLimiting
+        {
+            get
+            {
+                return _backtraceClientSiteLimiting;
+            }
+            set
+            {
+                _backtraceClientSiteLimiting = value;
+                _loggerChange = true;
+                NotifyPropertyChanged("BacktraceClientSiteLimiting");
+            }
+        }
+
+
         private int _xOffset { get; set; }
 
         public int XOffset
@@ -479,7 +594,7 @@ namespace SidebarDiagnostics.Models
         }
 
         private bool _toolbarMode { get; set; }
-        
+
         public bool ToolbarMode
         {
             get
@@ -670,7 +785,7 @@ namespace SidebarDiagnostics.Models
             }
         }
 
-        private FontSetting[] _fontSettingItems { get;  set;}
+        private FontSetting[] _fontSettingItems { get; set; }
 
         public FontSetting[] FontSettingItems
         {
@@ -719,7 +834,7 @@ namespace SidebarDiagnostics.Models
         }
 
         private bool _alertBlink { get; set; } = true;
-        
+
         public bool AlertBlink
         {
             get
@@ -783,7 +898,7 @@ namespace SidebarDiagnostics.Models
         }
 
         private bool _initiallyHidden { get; set; }
-        
+
         public bool InitiallyHidden
         {
             get
@@ -846,23 +961,31 @@ namespace SidebarDiagnostics.Models
 
                 foreach (MonitorConfig _config in _monitorConfig)
                 {
-                    _config.PropertyChanged += Child_PropertyChanged;
-
-                    _config.HardwareOC.CollectionChanged += Child_CollectionChanged;
-
-                    foreach (HardwareConfig _hardware in _config.HardwareOC)
+                    try
                     {
-                        _hardware.PropertyChanged += Child_PropertyChanged;
+                        _config.PropertyChanged += Child_PropertyChanged;
+
+                        _config.HardwareOC.CollectionChanged += Child_CollectionChanged;
+
+                        foreach (HardwareConfig _hardware in _config.HardwareOC)
+                        {
+                            _hardware.PropertyChanged += Child_PropertyChanged;
+                        }
+
+                        foreach (MetricConfig _metric in _config.Metrics)
+                        {
+                            _metric.PropertyChanged += Child_PropertyChanged;
+                        }
+
+                        foreach (ConfigParam _param in _config.Params)
+                        {
+                            _param.PropertyChanged += Child_PropertyChanged;
+                        }
                     }
-
-                    foreach (MetricConfig _metric in _config.Metrics)
+                    catch (Exception e)
                     {
-                        _metric.PropertyChanged += Child_PropertyChanged;
-                    }
-
-                    foreach (ConfigParam _param in _config.Params)
-                    {
-                        _param.PropertyChanged += Child_PropertyChanged;
+                        BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(e));
+                        continue;
                     }
                 }
 
