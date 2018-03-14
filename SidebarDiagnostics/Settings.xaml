@@ -394,13 +394,13 @@
                     </Grid.RowDefinitions>
 
                     <Label Grid.Column="0" Grid.Row="0" Content="{x:Static frame:Resources.BacktraceHost}" Height="26" Margin="0,8,15,4" />
-                    <TextBox  Grid.Column="2" Grid.Row="0" Text="{Binding Path=BacktraceHost,  Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox  Grid.Column="2" Grid.Row="0" Text="{Binding Path=BacktraceHost,  Mode=TwoWay,  UpdateSourceTrigger=LostFocus}" />
                     
                     <Label Grid.Column="0" Grid.Row="1" Content="{x:Static frame:Resources.BacktraceToken}" Height="26" Margin="0,8,15,4" />
                     <TextBox  Grid.Column="2" Grid.Row="1" Text="{Binding Path=BacktraceToken, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
                     
                     <Label Grid.Column="0" Grid.Row="2" Content="{x:Static frame:Resources.BacktraceDatabase}" Height="26" Margin="0,8,15,4" />
-                    <TextBox  Grid.Column="2" Grid.Row="2" Text="{Binding Path=BacktraceDatabasePath,  Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />
+                    <TextBox  Grid.Column="2" Grid.Row="2" Text="{Binding Path=BacktraceDatabasePath,  Mode=TwoWay,  UpdateSourceTrigger=LostFocus}" />
                     
                     <Label Grid.Column="0" Grid.Row="3" Content="{x:Static frame:Resources.BacktraceRateLimiting}" Height="26" Margin="0,8,15,4" />
                     <TextBox  Grid.Column="2" Grid.Row="3" Text="{Binding Path=BacktraceClientSiteLimiting, Mode=TwoWay,  UpdateSourceTrigger=PropertyChanged}" />

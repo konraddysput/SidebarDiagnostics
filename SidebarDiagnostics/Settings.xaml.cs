@@ -24,9 +24,14 @@ namespace SidebarDiagnostics
             InitializeComponent();
 
             DataContext = Model = new SettingsModel(sidebar);
-
-            Owner = sidebar;
-            ShowDialog();
+            try
+            {
+                Owner = sidebar;
+                ShowDialog();
+            }catch(Exception e)
+            {
+                BacktraceLogger.Log(new BacktraceReport(e));
+            }
         }
 
         private async Task Save(bool finalize)

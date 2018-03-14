@@ -32,7 +32,7 @@ namespace SidebarDiagnostics
             {
                 return;
             }
-            bool result = _client.Send(report);
+            _client.Send(report);
         }
 
         /// <summary>
@@ -101,6 +101,9 @@ namespace SidebarDiagnostics
             // setup new Backtrace client instance
             var credentials = new BacktraceCredentials(settings.BacktraceHost, settings.BacktraceToken);
             _client = new BacktraceClient(credentials, _attributes, settings.BacktraceDatabasePath, settings.BacktraceClientSiteLimiting);
+            _client.HandleApplicationException();
+            _client.AsyncRequest = true;
+            _client.HandleApplicationException();
             _client.OnServerAnswer = (BacktraceServerResponse response) =>
             {
                 Trace.WriteLine(response);

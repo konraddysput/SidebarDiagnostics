@@ -9,6 +9,7 @@ using SidebarDiagnostics.Utilities;
 using SidebarDiagnostics.Monitoring;
 using SidebarDiagnostics.Windows;
 using SidebarDiagnostics.Framework;
+using Backtrace.Model;
 
 namespace SidebarDiagnostics.Models
 {
@@ -437,6 +438,14 @@ namespace SidebarDiagnostics.Models
             }
             set
             {
+                try
+                {
+                    BacktraceLogger.ValidateBacktraceHostUri(value);
+                }
+                catch(Exception e)
+                {
+                    BacktraceLogger.Log(new BacktraceReport(e));
+                }
                 _backtraceHost = value;
                 _loggerChange = true;
                 NotifyPropertyChanged("BacktraceHost");
@@ -461,7 +470,7 @@ namespace SidebarDiagnostics.Models
                 }
                 catch(FormatException formatException)
                 {
-                    BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(formatException));
+                    BacktraceLogger.Log(new BacktraceReport(formatException));
                 }
                 _loggerChange = true;
                 NotifyPropertyChanged("BacktraceToken");
@@ -487,7 +496,7 @@ namespace SidebarDiagnostics.Models
                 }
                 catch(Exception e)
                 {
-                    BacktraceLogger.Log(new Backtrace.Model.BacktraceReport(e));
+                    BacktraceLogger.Log(new BacktraceReport(e));
                 }
                 _loggerChange = true;
                 NotifyPropertyChanged("BacktraceDatabasePath");
